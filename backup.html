@@ -33,6 +33,18 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Google Ads Global Site Tag (gtag.js) - REPLACE AW-CONVERSION_ID WITH YOUR ID -->
+    <!-- 
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-CONVERSION_ID"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'AW-CONVERSION_ID');
+    </script> 
+    -->
 </head>
 <body>
     <!-- Header -->
@@ -458,6 +470,9 @@
                     if (response.ok) {
                         // Mark as submitted in localStorage
                         localStorage.setItem(WAITLIST_STORAGE_KEY, 'true');
+
+                        // Report Conversion to Google Ads
+                        // gtag_report_conversion(); 
                         
                         showToast('Success!', 'You have been added to the waitlist.', 'success');
                         
@@ -489,6 +504,22 @@
                 }
             });
         });
+
+        // Google Ads Conversion Reporting Function - REPLACE AW-CONVERSION_ID/LABEL
+        /*
+        function gtag_report_conversion(url) {
+          var callback = function () {
+            if (typeof(url) != 'undefined') {
+              window.location = url;
+            }
+          };
+          gtag('event', 'conversion', {
+              'send_to': 'AW-CONVERSION_ID/CONVERSION_LABEL',
+              'event_callback': callback
+          });
+          return false;
+        }
+        */
     </script>
 </body>
 </html>
