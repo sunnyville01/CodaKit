@@ -381,6 +381,27 @@
     <div id="toast-container"></div>
 
     <script>
+        const WAITLIST_STORAGE_KEY = 'codakit_waitlist_submitted';
+
+        // Check if user has already submitted on page load
+        function checkExistingSubmission() {
+            if (localStorage.getItem(WAITLIST_STORAGE_KEY)) {
+                const form = document.getElementById('waitlistForm');
+                form.innerHTML = `
+                    <div class="already-joined">
+                        <svg class="already-joined-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        <span>You're already on the waitlist! We'll be in touch soon.</span>
+                    </div>
+                `;
+            }
+        }
+
+        // Run check on page load
+        checkExistingSubmission();
+
         // Toast Notification Logic
         function showToast(title, message, type = 'success') {
             const container = document.getElementById('toast-container');
@@ -447,17 +468,32 @@
                 });
         
                 if (response.ok) {
+                    // Mark as submitted in localStorage
+                    localStorage.setItem(WAITLIST_STORAGE_KEY, 'true');
+                    
                     showToast('Success!', 'You have been added to the waitlist.', 'success');
-                    form.reset(); // Clear the form
+                    
+                    // Replace form with confirmation message
+                    form.innerHTML = `
+                        <div class="already-joined">
+                            <svg class="already-joined-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            <span>You're on the list! We'll be in touch soon.</span>
+                        </div>
+                    `;
                 } else {
                     const error = await response.json();
                     showToast('Error', 'Submission failed: ' + (error.message || 'Unknown error.'), 'error');
+                    // Reset Loading State on error
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
                 }
             } catch (error) {
                 console.error('Network error:', error);
                 showToast('Network Error', 'Could not reach the submission server.', 'error');
-            } finally {
-                // Reset Loading State
+                // Reset Loading State on error
                 submitButton.disabled = false;
                 submitButton.innerHTML = originalButtonText;
             }
